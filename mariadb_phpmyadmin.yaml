@@ -2,7 +2,7 @@
   become: yes
 
   tasks:
-    - name: Install Apache, MariaDB, PHP and phpMyAdmin
+    - name: Install phpMyAdmin stack
       ansible.builtin.apt:
         name:
           - apache2
@@ -10,17 +10,28 @@
           - php
           - php-mysql
           - phpmyadmin
+          - php-mbstring
         state: present
         update_cache: yes
 
-    - name: Start Apache
+    - name: Enable phpMyAdmin Apache config
+      ansible.builtin.file:
+        src: /etc/phpmyadmin/apache.conf
+        dest: /etc/apache2/conf-enabled/phpmyadmin.conf
+        state: link
+
+    - name: Enable mbstring
+      ansible.builtin.command: phpenmod mbstring
+      notify: restart apache
+
+    - name: Ensure Apache running
       ansible.builtin.service:
         name: apache2
         state: started
         enabled: yes
 
-    - name: Start MariaDB
+  handlers:
+    - name: restart apache
       ansible.builtin.service:
-        name: mariadb
-        state: started
-        enabled: yes
+        name: apache2
+        state: restarted
