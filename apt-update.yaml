@@ -1,0 +1,36 @@
+---
+- hosts: all
+  become: yes
+  serial: "25%" # Updates servers in 25% batches
+  tasks:
+    - name: Update apt repo and cache on all Ubuntu/Debian boxes
+      ansible.builtin.apt:
+        update_cache: yes
+        force_apt_get: yes
+        cache_valid_time: 3600
+
+    - name: Upgrade all packages on servers
+      ansible.builtin.apt:
+        upgrade: dist
+        force_apt_get: yes
+
+    - name: Check if a reboot is required
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+        get_checksum: no
+      register: reboot_required_file
+
+    - name: Reboot the server if required
+      ansible.builtin.reboot:
+        msg: "Reboot initiated by Ansible due to kernel updates"
+        connect_timeout: 5
+        reboot_timeout: 300
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+        test_command: whoami
+      when: reboot_required_file.stat.exists == true
+
+    - name: Remove dependencies that are no longer required
+      ansible.builtin.apt:
+        autoremove: yes
+
