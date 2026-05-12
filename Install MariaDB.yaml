@@ -15,5 +15,5 @@
     -  name: Start MariaDB
        service:
          name: mariadb
-         state: enabled
+         state: started
          enabled: yes               
