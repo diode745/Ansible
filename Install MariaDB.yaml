@@ -1,0 +1,19 @@
+- name: Install MariaDB
+  hosts: mariadbservers
+  become: true
+
+  tasks:
+
+    -  name: Update apt-get repo and cache
+       apt: Update_cache=yes force_apt_get=yes cache_valid_time=3600
+
+    -  name: Install MariaDB
+       apt:
+         name: mariadb-server
+         state: present
+
+    -  name: Start MariaDB
+       service:
+         name: mariadb
+         state: enabled
+         enabled: yes               
