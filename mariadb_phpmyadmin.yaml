@@ -25,7 +25,7 @@
     state: started
     enabled: yes
 
-handlers:
+  handlers:
   - name: restart apache
     ansible.builtin.service:
       name: apache2
