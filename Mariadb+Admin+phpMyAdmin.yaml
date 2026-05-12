@@ -1,0 +1,52 @@
+- name: MariaDB + phpMyAdmin full setup
+  hosts: mariadbservers
+  become: yes
+
+  vars:
+    mariadb_admin_user: admin
+    mariadb_admin_password: "StrongPassword123!"
+
+  tasks:
+
+    - name: Install required packages
+      ansible.builtin.apt:
+        name:
+          - mariadb-server
+          - python3-pymysql
+          - phpmyadmin
+          - php-mysql
+        state: present
+        update_cache: yes
+
+    - name: Ensure MariaDB is running
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Create MariaDB admin user
+      community.mysql.mysql_user:
+        name: "{{ mariadb_admin_user }}"
+        password: "{{ mariadb_admin_password }}"
+        host: localhost
+        priv: "*.*:ALL,GRANT"
+        state: present
+        login_unix_socket: /run/mysqld/mysqld.sock
+
+    - name: Remove anonymous users
+      community.mysql.mysql_user:
+        name: ""
+        host_all: yes
+        state: absent
+        login_unix_socket: /run/mysqld/mysqld.sock
+
+    - name: Remove test database
+      community.mysql.mysql_db:
+        name: test
+        state: absent
+        login_unix_socket: /run/mysqld/mysqld.sock
+
+    - name: Flush privileges
+      community.mysql.mysql_query:
+        login_unix_socket: /run/mysqld/mysqld.sock
+        query: FLUSH PRIVILEGES;
