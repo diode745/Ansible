@@ -1,7 +1,4 @@
 ---
-# @author Stephen Damian <contact@damian-freelance.fr>
-# @link   https://github.com/s-damian/ansible-web-server-debian
-
 - name: Installing the LEMP server
   hosts: webservers
   remote_user: root
@@ -18,7 +15,7 @@
     website_path: sites
 
     # Set OS and PHP timezone
-    linux_timezone: UTC
+    linux_timezone: Europe/Amsterdam
     # ---------- /OS ---------- #
 
     # ---------- Your websites ---------- #
@@ -36,7 +33,7 @@
 
     # ---------- HTTP server ---------- #
     # Supported: "nginx" or "apache"
-    http_server: nginx
+    http_server: apache
     # ---------- /HTTP server ---------- #
 
     # ---------- MariaDB ---------- #
