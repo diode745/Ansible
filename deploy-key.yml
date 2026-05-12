@@ -1,0 +1,23 @@
+---
+- name: Deploy SSH public key
+  hosts: all
+  become: true
+
+  vars:
+    deploy_user: diode
+    public_key: "{{ lookup('file', 'files/devop.pub') }}"
+
+  tasks:
+    - name: Ensure .ssh directory exists
+      file:
+        path: "/home/{{ deploy_user }}/.ssh"
+        state: directory
+        owner: "{{ deploy_user }}"
+        group: "{{ deploy_user }}"
+        mode: '0700'
+
+    - name: Install authorized key
+      authorized_key:
+        user: "{{ deploy_user }}"
+        state: present
+        key: "{{ public_key }}"
