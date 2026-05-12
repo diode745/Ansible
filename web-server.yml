@@ -1,0 +1,92 @@
+---
+# @author Stephen Damian <contact@damian-freelance.fr>
+# @link   https://github.com/s-damian/ansible-web-server-debian
+
+- name: Installing the LEMP server
+  hosts: webservers
+  remote_user: root
+
+  # Variables
+  vars:
+    # ---------- OS ---------- #
+    # REQUIRED
+    # Your linux user
+    linux_user: user_test
+
+    # Path of your websites in your user directory
+    # /home/{{ linux_user }}/www/{{ website_path }}/{{ domain }}
+    website_path: sites
+
+    # Set OS and PHP timezone
+    linux_timezone: UTC
+    # ---------- /OS ---------- #
+
+    # ---------- Your websites ---------- #
+    # REQUIRED
+    # Your domains
+    # You must put your domains without the "www." (example: your-domain.com).
+    # But you can use a subdomain (example: subdomain.your-domain.com).
+    domains:
+      - your-domain.com
+    
+    # Path of the public directory of your website
+    # /home/{{ linux_user }}/www/{{ website_path }}/{{ domain }}/{{ public_path }}
+    public_path: public
+    # ---------- /Your websites ---------- #
+
+    # ---------- HTTP server ---------- #
+    # Supported: "nginx" or "apache"
+    http_server: nginx
+    # ---------- /HTTP server ---------- #
+
+    # ---------- MariaDB ---------- #
+    # REQUIRED
+    # Your MariaDB super-user
+    mariadb_super_user_username: super_user
+    mariadb_super_user_password: test
+
+    # REQUIRED
+    # Your prod MariaDB user
+    mariadb_prod_username: user_prod
+    mariadb_prod_password: test
+
+    # MariaDB parameters
+    mariadb_collation: utf8mb4_unicode_ci
+    mariadb_encoding: utf8mb4
+    mariadb_host: localhost
+    mariadb_port: 3306
+    # ---------- /MariaDB ---------- #
+
+    # ---------- PhpMyAdmin ---------- #
+    # PhpMyAdmin Path
+    phpmyadmin_path: phpmyadmin
+
+    # REQUIRED
+    phpmyadmin_blowfish_secret: '3K2*%<+a^#^!)1?ti~Pr$#Tzmp_$t5Mj'
+    # ---------- /PhpMyAdmin ---------- #
+
+    # ---------- Versions ---------- #
+    # PHP version. Supported: 8.0, 8.1, 8.2
+    version_php: "8.2"
+
+    # MariaDB version. Supported: 10.5, 10.6, 10.7, 10.8, 10.9, 10.10
+    version_mariadb: "10.10"
+
+    # PhpMyAdmin version
+    # See available versions here: https://www.phpmyadmin.net/files/
+    version_phpmyadmin: "5.2.0"
+    # ---------- /Versions ---------- #
+
+  # Roles
+  roles:
+    - start
+    - domains-architecture
+    - php
+    - nginx-step1 # Install Nginx
+    - nginx-step2 # Conf Nginx
+    - apache-step1 # Install Apache
+    - apache-step2 # Conf Apache
+    - mariadb
+    - phpmyadmin
+    - end
+...
