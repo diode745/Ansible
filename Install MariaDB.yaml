@@ -14,7 +14,7 @@
          update_cache: yes
     
     -  name: Start MariaDB
-       service:
+       ansible.builtin.service:
          name: mariadb
          state: started
          enabled: yes               
