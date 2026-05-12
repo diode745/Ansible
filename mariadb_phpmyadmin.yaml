@@ -35,3 +35,12 @@
       ansible.builtin.service:
         name: apache2
         state: restarted
+
+    - name: Create MariaDB admin user
+      community.mysql.mysql_user:
+        name: admin
+        password: "StrongPassword123!"
+        priv: "*.*:ALL,GRANT"
+        host: localhost
+        state: present
+        login_unix_socket: /run/mysqld/mysqld.sock        
